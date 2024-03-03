@@ -10,7 +10,7 @@ const corsOptions  = {
 
 app.use(cors(corsOptions ))
 app.use(express.json())
-app.route("/", router)
+app.use("/", router)
 
 
 app.listen(3000, () =>{
