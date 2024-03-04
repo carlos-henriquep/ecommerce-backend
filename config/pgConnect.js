@@ -1,7 +1,7 @@
 import pg from 'pg'
 const {Pool} = pg
 
-const conection = new Pool({
+const connection = new Pool({
     database: process.env.DATABASE,
     user: process.env.USER_DATABASE,
     password: process.env.USER_PASSWORD,
@@ -9,4 +9,4 @@ const conection = new Pool({
     port: process.env.PORT
 })
 
-export default conection;
+export default connection;
