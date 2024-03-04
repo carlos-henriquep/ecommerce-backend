@@ -7,7 +7,9 @@ const loginUser = (userEmail, userPassword) => {
     return {errorMessage: "O campo senha não pode estar vazio"}
   }
 
-  return true
+  return {
+    errorMessage: ""
+  }
 };
 
 const validations = { loginUser };

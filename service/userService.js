@@ -5,7 +5,7 @@ const userLogin = async(userEmail, userPassword) =>{
 
     const validate = validations.loginUser(userEmail, userPassword)
 
-    if(!validate || validate.errorMessage){
+    if(validate.errorMessage){
         return {
             errorMessage: validate.errorMessage,
             statusCode: 400,
@@ -23,7 +23,7 @@ const userLogin = async(userEmail, userPassword) =>{
         const credentials = await userModel.userLogin(userEmail, userPassword)
 
         if(credentials.length === 0){
-            throw new Error("Incorrect Password")
+            throw new Error("Incorrect email or password")
         }
         
         return{
