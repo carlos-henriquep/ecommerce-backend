@@ -17,13 +17,13 @@ const userLogin = async(userEmail, userPassword) =>{
 
         const emailExists = await userModel.emailAlreadyRegistered(userEmail)
         if(emailExists.length === 0){
-            throw new Error("Email não cadastrado")
+            throw new Error("E-mail not already yet registered ")
         }
 
         const credentials = await userModel.userLogin(userEmail, userPassword)
 
         if(credentials.length === 0){
-            throw new Error("Usuario não cadastrado")
+            throw new Error("Incorrect Password")
         }
         
         return{
