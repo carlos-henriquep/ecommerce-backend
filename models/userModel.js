@@ -1,18 +1,38 @@
 import connection from "../config/pgConnect.js";
 
-const userLogin = async(userEmail, userPassword)=>{
-    const user = await connection.query("SELECT id, username, avatar FROM users WHERE email = $1 AND password = $2", [userEmail, userPassword]);
+const userLogin = async (userEmail) => {
+  const user = await connection.query(
+    "SELECT id, username, avatar, email,password FROM users WHERE email = $1",
+    [userEmail]
+  );
 
-    return user.rows
-}
+  return user.rows;
+};
 
-const emailAlreadyRegistered = async(userEmail) =>{
-    const user = await connection.query("SELECT id, username, avatar FROM users WHERE email = $1 ", [userEmail]);
+const userRegister = async (id, username, email, password) => {
+  const pool = await connection.connect();
+  try {
+    await pool.query("BEGIN TRANSACTION");
+    const savedUser = await pool.query(
+      "INSERT INTO users (id,username,email,password) VALUES($1,$2,$3, $4)",
+      [id, username, email, password]
+    );
+    return {
+      errorMessage: null,
+      value: "User created successfully",
+    };
+  } catch (error) {
+    await pool.query("ROLLBACK");
+    return {
+      errorMessage: error.message,
+      value: null,
+    };
+  } finally {
+    await pool.query("COMMIT");
+    pool.release();
+  }
+};
 
-    return user.rows
-}
+const userModel = { userLogin, userRegister };
 
-
-const userModel = {userLogin, emailAlreadyRegistered}
-
-export default userModel
+export default userModel;
