@@ -1,5 +1,5 @@
 import userModel from "../models/userModel.js";
-import validations from "./validations/validations.js";
+import validations from "./utils/validations.js";
 
 const userLogin = async(userEmail, userPassword) =>{
 
