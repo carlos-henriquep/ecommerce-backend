@@ -1,49 +1,85 @@
 import userModel from "../models/userModel.js";
+import passwordEncryptor from "./utils/passwordEncryptor.js";
 import validations from "./utils/validations.js";
+import { v4 as uuid } from "uuid";
 
-const userLogin = async(userEmail, userPassword) =>{
+const userLogin = async (userEmail, userPassword) => {
+  const validate = validations.loginUser(userEmail, userPassword);
 
-    const validate = validations.loginUser(userEmail, userPassword)
+  if (validate.errorMessage) {
+    return {
+      errorMessage: validate.errorMessage,
+      statusCode: 400,
+      value: null,
+    };
+  }
 
-    if(validate.errorMessage){
-        return {
-            errorMessage: validate.errorMessage,
-            statusCode: 400,
-            value: null
-        }
+  try {
+    const credentials = await userModel.userLogin(userEmail);
+
+    if (credentials.length === 0) {
+      throw new Error("Incorrect email or password ");
+    }
+    const passwordVerify = await passwordEncryptor.decryptPassword(
+      userPassword,
+      credentials[0].password
+    );
+
+    if (!passwordVerify) {
+      throw new Error("Incorrect email or password ");
     }
 
-    try {
+    return {
+      errorMessage: null,
+      statusCode: 200,
+      value: credentials,
+    };
+  } catch (error) {
+    return {
+      errorMessage: error.message,
+      statusCode: 401,
+      value: null,
+    };
+  }
+};
 
-        const emailExists = await userModel.emailAlreadyRegistered(userEmail)
-        if(emailExists.length === 0){
-            throw new Error("E-mail not already yet registered ")
-        }
+const userRegister = async ( username, email, password ) => {
 
-        const credentials = await userModel.userLogin(userEmail, userPassword)
+  const validate = validations.userRegister(username, email, password);
+  if (validate.errorMessage) {
+    return {
+      errorMessage: validate.errorMessage,
+      statusCode: 400,
+      value: null,
+    };
+  }
 
-        if(credentials.length === 0){
-            throw new Error("Incorrect email or password")
-        }
-        
-        return{
-            errorMessage: null,
-            statusCode: 200,
-            value:credentials
-        }
-    } catch (error) {
-        return{
-            errorMessage: error.message,
-            statusCode: 401,
-            value: null
-        }
+  try {
+    const existsEmail = await userModel.userLogin(email)
+    if(existsEmail.length > 0){
+       throw new Error("Email already registered")
     }
+    const id = uuid();
+    const hashedPassword = await passwordEncryptor.encryptPassword(password)
+    const credentials = await userModel.userRegister( id, username, email, hashedPassword )
+    
+    if(credentials.errorMessage){
+        throw new Error(credentials.errorMessage)
+    }
+    return{
+        errorMessage: null,
+        statusCode: 201,
+        value: credentials.value
+    }
+  } catch (error) {
+    return {
+        errorMessage: error.message,
+        statusCode: 422,
+        value: null
+    }
+  }
+};
 
+const userService = { userLogin, userRegister };
 
-}
-
-
-
-const userService = {userLogin}
-
-export default userService
+export default userService;

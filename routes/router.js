@@ -7,6 +7,7 @@ const router = express.Router()
 router.get('/api/products', productController.list)
 router.get('/api/products/:id', productController.findOneProduct)
 router.post('/api/login', userController.userLogin)
+router.post('/api/signup', userController.userRegister)
 
 
 export default router;
