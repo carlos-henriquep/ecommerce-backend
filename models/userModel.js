@@ -10,26 +10,26 @@ const userLogin = async (userEmail) => {
 };
 
 const userRegister = async (id, username, email, password) => {
-  const pool = await connection.connect();
+  const client = await connection.connect();
   try {
-    await pool.query("BEGIN TRANSACTION");
-    const savedUser = await pool.query(
+    await client.query("BEGIN TRANSACTION");
+    const savedUser = await client.query(
       "INSERT INTO users (id,username,email,password) VALUES($1,$2,$3, $4)",
       [id, username, email, password]
     );
+    await client.query("COMMIT");
     return {
       errorMessage: null,
       value: "User created successfully",
     };
   } catch (error) {
-    await pool.query("ROLLBACK");
+    await client.query("ROLLBACK");
     return {
       errorMessage: error.message,
       value: null,
     };
   } finally {
-    await pool.query("COMMIT");
-    pool.release();
+    client.release();
   }
 };
 
