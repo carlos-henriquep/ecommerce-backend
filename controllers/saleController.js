@@ -14,6 +14,10 @@ const allSaleOfUser = async(req,res)=>{
     return res.status(statusCode).json(sales)
 }
 
-const saleController = {allSaleOfUser}
+const performSale = async(req,res)=>{
+    saleService.performSale(req.body)
+}
+
+const saleController = {allSaleOfUser, performSale}
 
 export default saleController

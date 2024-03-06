@@ -31,6 +31,9 @@ const allSaleOfUser = async(id)=>{
 
 }
 
-const saleService = {allSaleOfUser}
+const performSale = async(sales)=>{
+    const teste = await saleModel.performSale(sales)
+}
+const saleService = {allSaleOfUser, performSale}
 
 export default saleService

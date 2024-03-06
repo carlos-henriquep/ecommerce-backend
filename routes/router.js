@@ -10,6 +10,7 @@ router.get('/api/products/:id', productController.findOneProduct)
 router.post('/api/login', userController.userLogin)
 router.post('/api/signup', userController.userRegister)
 router.get('/api/sale/:id', saleController.allSaleOfUser)
+router.post('/api/sale', saleController.performSale)
 
 
 export default router;
