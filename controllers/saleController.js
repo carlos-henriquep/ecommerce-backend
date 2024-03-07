@@ -15,7 +15,7 @@ const allSaleOfUser = async(req,res)=>{
 }
 
 const performSale = async(req,res)=>{
-    const idUser = "0d1f1159-b433-43c4-b85b-dd54053d4488"
+    const idUser = "ce7e48e2-e4b0-489e-bc4c-bc454651593c"
     const products = req.body.products
     const {
         errorMessage,

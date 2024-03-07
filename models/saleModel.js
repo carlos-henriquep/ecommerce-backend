@@ -20,26 +20,31 @@ const allSaleOfUser = async (id) => {
 const performSale = async (saleItens, idUser) => {
   const client = await connection.connect();
 
-  const productId = saleItens.map((product) => product.id_product);
-  const foundProducts = await productModel.findProductByIds(productId, client);
-
-  const validations = saleValidation(saleItens, productId, foundProducts)
- 
-  if(validations.errorMessage){
-    return{
-      errorMessage: validations.errorMessage,
-      value: null
-    }
-  }
-
   try {
-    
+    await client.query("BEGIN TRANSACTION");
+    const productId = saleItens.map((product) => product.id_product);
+    const foundProducts = await productModel.findProductByIds(
+      productId,
+      client
+    );
+
+    if (foundProducts.length === 0) {
+      throw new Error(`Products not found with id: ${productId.toString()}`);
+    }
+
+    const validations = saleValidation(saleItens, productId, foundProducts);
+
+    if (validations.errorMessage) {
+      return {
+        errorMessage: validations.errorMessage,
+        value: null,
+      };
+    }
+
     const saleId = await client.query(
       "INSERT INTO sale(status,id_user) values('Finalizado', $1) RETURNING id",
       [idUser]
     );
-
-   
 
     const itensToSale = saleItens.map((item) => [
       saleId.rows[0].id,
@@ -55,18 +60,29 @@ const performSale = async (saleItens, idUser) => {
 
     await client.query(finishSaleQuery);
 
+    await Promise.all(
+      saleItens.map((item) =>
+        client.query("UPDATE product SET stock = stock - $1 WHERE id = $2", [
+          item.quantity,
+          item.id_product,
+        ])
+      )
+    );
+
+    await client.query("COMMIT");
+
     return {
       errorMessage: null,
       value: saleId.rows[0].id,
     };
   } catch (error) {
-    await client.query("ROLLBACK")
+    await client.query("ROLLBACK");
     return {
       errorMessage: error.message,
-      value: null
-    }
-  }finally{
-    client.release()
+      value: null,
+    };
+  } finally {
+    client.release();
   }
 };
 
