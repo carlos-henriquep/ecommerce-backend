@@ -1,4 +1,14 @@
-const saleValidation = (saleItens, productCartId, productBd) =>{
+const saleValidation = (saleitems, productCartId, productBd) =>{
+
+  const verifyQuantity = saleitems.map(items => items ).filter(items => items.quantity <=0).map(items =>  items.id_product)
+  
+  if(verifyQuantity.length > 0){
+    const errorMessage = `Product cannot have a quantity less than or equal to zero: ${verifyQuantity.toString()} `
+    return {
+      errorMessage:errorMessage,
+      value:verifyQuantity
+    }
+  }
 
     const missingProducts = productCartId.filter(
         (item) => productBd.findIndex((product) => product.id === item) === -1
@@ -12,9 +22,9 @@ const saleValidation = (saleItens, productCartId, productBd) =>{
         };
       }
     
-      const verifyStock = saleItens.reduce((accumulator, currentItem) => {
+      const verifyStock = saleitems.reduce((accumulator, currentItem) => {
         const product = productBd.find((prod) => prod.id === currentItem.id_product);
-        if (product.stock < currentItem.quantity) {
+        if (product.stock < currentItem.quantity ) {
           accumulator.push(currentItem);
         }
         return accumulator;
@@ -30,7 +40,7 @@ const saleValidation = (saleItens, productCartId, productBd) =>{
         };
       }
     
-      const verifyPrice = saleItens.reduce((accumulator, currentItem) => {
+      const verifyPrice = saleitems.reduce((accumulator, currentItem) => {
         const product = productBd.find((prod) => prod.id === currentItem.id_product);
         if (product.price !== currentItem.unique_price) {
           accumulator.push(currentItem);
