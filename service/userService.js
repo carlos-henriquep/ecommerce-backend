@@ -2,6 +2,9 @@ import userModel from "../models/userModel.js";
 import passwordEncryptor from "./utils/passwordEncryptor.js";
 import validations from "./utils/validations.js";
 import { v4 as uuid } from "uuid";
+import jwt from "jsonwebtoken";
+
+const SECRET_KEY = process.env.SECRET_KEY
 
 const userLogin = async (userEmail, userPassword) => {
   const validate = validations.loginUser(userEmail, userPassword);
@@ -28,11 +31,12 @@ const userLogin = async (userEmail, userPassword) => {
     if (!passwordVerify) {
       throw new Error("Incorrect email or password ");
     }
+    const token = jwt.sign({id: credentials[0].id, username: credentials[0].id}, SECRET_KEY)
 
     return {
       errorMessage: null,
       statusCode: 200,
-      value: credentials,
+      value: {token, credentials},
     };
   } catch (error) {
     return {
@@ -59,10 +63,8 @@ const userRegister = async ( username, email, password ) => {
     if(existsEmail.length > 0){
        throw new Error("Email already registered")
     }
-    const id = uuid();
     const hashedPassword = await passwordEncryptor.encryptPassword(password)
-    const credentials = await userModel.userRegister( id, username, email, hashedPassword )
-    
+    const credentials = await userModel.userRegister( username, email, hashedPassword )
     if(credentials.errorMessage){
         throw new Error(credentials.errorMessage)
     }
