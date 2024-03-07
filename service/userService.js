@@ -63,10 +63,8 @@ const userRegister = async ( username, email, password ) => {
     if(existsEmail.length > 0){
        throw new Error("Email already registered")
     }
-    const id = uuid();
     const hashedPassword = await passwordEncryptor.encryptPassword(password)
-    const credentials = await userModel.userRegister( id, username, email, hashedPassword )
-    
+    const credentials = await userModel.userRegister( username, email, hashedPassword )
     if(credentials.errorMessage){
         throw new Error(credentials.errorMessage)
     }

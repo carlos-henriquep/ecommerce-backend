@@ -9,13 +9,13 @@ const userLogin = async (userEmail) => {
   return user.rows;
 };
 
-const userRegister = async (id, username, email, password) => {
+const userRegister = async (username, email, password) => {
   const client = await connection.connect();
   try {
     await client.query("BEGIN TRANSACTION");
-    const savedUser = await client.query(
-      "INSERT INTO users (id,username,email,password) VALUES($1,$2,$3, $4)",
-      [id, username, email, password]
+    await client.query(
+      "INSERT INTO users (username,email,password) VALUES($1,$2,$3)",
+      [username, email, password]
     );
     await client.query("COMMIT");
     return {

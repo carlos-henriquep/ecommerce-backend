@@ -15,7 +15,17 @@ const allSaleOfUser = async(req,res)=>{
 }
 
 const performSale = async(req,res)=>{
-    saleService.performSale(req.body)
+    const idUser = "0d1f1159-b433-43c4-b85b-dd54053d4488"
+    const products = req.body.products
+    const {
+        errorMessage,
+        statusCode,
+        value
+    } = await saleService.performSale(products, idUser)
+
+    const sale = errorMessage ? {errorMessage: errorMessage} : {sale: value}
+
+    return res.status(statusCode).json(sale)
 }
 
 const saleController = {allSaleOfUser, performSale}
