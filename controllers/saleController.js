@@ -2,7 +2,7 @@ import saleService from "../service/saleService.js"
 
 
 const allSaleOfUser = async(req,res)=>{
-    const {id} = req.params
+    const {id} = req.user
     const {
         errorMessage,
         statusCode,
@@ -15,13 +15,13 @@ const allSaleOfUser = async(req,res)=>{
 }
 
 const performSale = async(req,res)=>{
-    const idUser = "0d1f1159-b433-43c4-b85b-dd54053d4488"
+    const {id} = req.user
     const products = req.body.products
     const {
         errorMessage,
         statusCode,
         value
-    } = await saleService.performSale(products, idUser)
+    } = await saleService.performSale(products, id)
 
     const sale = errorMessage ? {errorMessage: errorMessage} : {sale: value}
 

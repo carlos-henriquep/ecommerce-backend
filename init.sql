@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS sale(
 CREATE TABLE IF NOT EXISTS itens(
     id_sale UUID NOT NULL REFERENCES sale(id),
     id_product UUID NOT NULL REFERENCES product(id),
-    quantity int Not NULL CHECK (quantity >= 0),
+    quantity int Not NULL CHECK (quantity > 0),
     unique_price NUMERIC(10,2) NOT NULL CHECK (unique_price >0),
     CONSTRAINT unique_sale_product UNIQUE (id_sale, id_product)
 );
