@@ -2,7 +2,7 @@ import format from "pg-format";
 import connection from "../config/pgConnect.js";
 
 const listProducts = async() =>{
-    const products = await connection.query('SELECT * FROM PRODUCT')
+    const products = await connection.query('SELECT p.id, p.name, p.description, p.image, p.price, p.stock, c.name as category_name FROM PRODUCT as p INNER JOIN Category as c on c.id = p.id_category ')
 
     return products.rows
 }
